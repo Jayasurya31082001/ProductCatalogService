@@ -15,16 +15,16 @@ public class FakeStoreDTO {
     private Double price;
     private String description;
     private String category;
-    private String imageurl;
+    private String image;
 
 
     public Product toProductEntity() {
         Product product = new Product();
         product.setId(this.id);
-        product.setName(this.title);
+        product.setTitle(this.title);
         product.setPrice(this.price);
         product.setDescription(this.description);
-        product.setImageurl(this.imageurl);
+        product.setImage(this.image);
         Category category1 = new Category();
         category1.setName(this.category);
         product.setCategory(category1);

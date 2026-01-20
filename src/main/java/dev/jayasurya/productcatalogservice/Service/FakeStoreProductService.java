@@ -1,5 +1,6 @@
 package dev.jayasurya.productcatalogservice.Service;
 
+import dev.jayasurya.productcatalogservice.Client.FakeStoreAPIClient;
 import dev.jayasurya.productcatalogservice.DTO.FakeStoreDTO;
 import dev.jayasurya.productcatalogservice.DTO.ProductDTO;
 import dev.jayasurya.productcatalogservice.Model.Product;
@@ -17,21 +18,22 @@ import java.util.List;
 @Service
 public class FakeStoreProductService implements  IProductService{
 
-    private RestTemplate restTemplate;
+    private FakeStoreAPIClient fakeStoreAPIClient;
 
-    public FakeStoreProductService(RestTemplate restTemplate) {
-        this.restTemplate = restTemplate;
+public  FakeStoreProductService(FakeStoreAPIClient fakeStoreAPIClient) {
+        this.fakeStoreAPIClient = fakeStoreAPIClient;
     }
+
+
 
     @Override
     public Product getProductById(Long id) {
 
-        ResponseEntity<FakeStoreDTO> fakeStoreDTOResponseEntity = restTemplate.getForEntity("https://fakestoreapi.com/products/{id}",
+        ResponseEntity<FakeStoreDTO> fakeStoreDTOResponseEntity = fakeStoreAPIClient.getRequest("https://fakestoreapi.com/products/{id}",
                 FakeStoreDTO.class,
                 id);
 
-        if (fakeStoreDTOResponseEntity.hasBody() &&
-                (fakeStoreDTOResponseEntity.getStatusCode().equals( HttpStatusCode.valueOf(200)) || fakeStoreDTOResponseEntity.getStatusCode().equals( HttpStatusCode.valueOf(201)))) {
+        if (fakeStoreAPIClient.validateResponse(fakeStoreDTOResponseEntity)) {
             FakeStoreDTO fakeStoreDTO = fakeStoreDTOResponseEntity.getBody();
             return fakeStoreDTO.toProductEntity();
         }
@@ -41,16 +43,14 @@ public class FakeStoreProductService implements  IProductService{
 
     @Override
     public List<Product> getAllProducts() {
-        ResponseEntity<List<FakeStoreDTO>> productResponseEntity =
-                restTemplate.exchange("https://fakestoreapi.com/products",
-                        HttpMethod.GET,
-                        null,
-                        new ParameterizedTypeReference<List<FakeStoreDTO>>(){}
-                );
+        ResponseEntity<FakeStoreDTO[]> productResponseEntity =
+        fakeStoreAPIClient.getRequest("https://fakestoreapi.com/products",
+                FakeStoreDTO[].class
+        );
 
 
-        if(productResponseEntity.hasBody() &&
-                (productResponseEntity.getStatusCode().equals( HttpStatusCode.valueOf(200))||productResponseEntity.getStatusCode().equals( HttpStatusCode.valueOf(201)))){
+
+        if(fakeStoreAPIClient.validateResponse(productResponseEntity)){
             List<Product> products = new ArrayList<>();
             for(FakeStoreDTO productDTO: productResponseEntity.getBody()){
                 products.add(productDTO.toProductEntity());
@@ -63,6 +63,32 @@ public class FakeStoreProductService implements  IProductService{
 
     @Override
     public Product createProduct(Product product) {
+
+          FakeStoreDTO fakeStoreDTO = product.toFakeStoreDTO();
+            ResponseEntity<FakeStoreDTO> responseEntity = fakeStoreAPIClient.postRequest("https://fakestoreapi.com/products",
+                     fakeStoreDTO,
+                    FakeStoreDTO.class
+            );
+            if(fakeStoreAPIClient.validateResponse(responseEntity)){
+                FakeStoreDTO createdFakeStoreDTO = responseEntity.getBody();
+                return createdFakeStoreDTO.toProductEntity();
+            }
+            return null;
+    }
+
+    @Override
+    public Product updateProductById(Long id, Product product) {
+        FakeStoreDTO fakeStoreDTO = product.toFakeStoreDTO();
+        ResponseEntity<FakeStoreDTO> responseEntity = fakeStoreAPIClient.putRequest("https://fakestoreapi.com/products/{id}",
+                fakeStoreDTO,
+                FakeStoreDTO.class,
+                id
+        );
+        if(fakeStoreAPIClient.validateResponse(responseEntity)){
+            FakeStoreDTO updatedFakeStoreDTO = responseEntity.getBody();
+            return updatedFakeStoreDTO.toProductEntity();
+        }
         return null;
     }
+
 }

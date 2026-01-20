@@ -17,8 +17,8 @@ public class Category extends  BaseClass {
     public CategoryDTO toCategoryDTO() {
         CategoryDTO categoryDTO = new CategoryDTO();
         categoryDTO.setId(this.getId());
-        categoryDTO.setName(this.name);
-        categoryDTO.setDescription(this.description);
+        categoryDTO.setName(this.getName());
+        categoryDTO.setDescription(this.getDescription());
         return categoryDTO;
     }
 }
