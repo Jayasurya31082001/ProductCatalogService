@@ -1,17 +1,20 @@
 package dev.jayasurya.productcatalogservice.Service;
 
+import dev.jayasurya.productcatalogservice.Exception.ProductAlreadyExistException;
+import dev.jayasurya.productcatalogservice.Exception.ProductNotFoundException;
 import dev.jayasurya.productcatalogservice.Model.Product;
 
 import java.util.List;
 
 public interface IProductService {
 
-    Product getProductById(Long id);
+   public Product getProductById(Long id) ;
 
-    List<Product> getAllProducts();
+    public List<Product> getAllProducts() ;
 
-    Product createProduct(Product product);
+    public Product createProduct(Product product) ;
 
+    public Product updateProductById(Long id, Product product) ;
 
-    Product updateProductById(Long id, Product product);
+    public boolean deleteProductById(Long id) ;
 }

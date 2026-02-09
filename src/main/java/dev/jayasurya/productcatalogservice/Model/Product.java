@@ -2,17 +2,20 @@ package dev.jayasurya.productcatalogservice.Model;
 
 import dev.jayasurya.productcatalogservice.DTO.FakeStoreDTO;
 import dev.jayasurya.productcatalogservice.DTO.ProductDTO;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
 @Setter
-
+@Entity
 public class Product extends  BaseClass{
 
     String title;
     String description;
     Double price;
+    @ManyToOne(optional = false, fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
+    @JoinColumn(name = "category_id")
     Category category;
     String image;
 

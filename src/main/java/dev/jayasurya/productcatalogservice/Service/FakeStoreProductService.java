@@ -91,4 +91,12 @@ public  FakeStoreProductService(FakeStoreAPIClient fakeStoreAPIClient) {
         return null;
     }
 
+    @Override
+    public boolean deleteProductById(Long id) {
+
+        if (fakeStoreAPIClient.deleteRequest("https://fakestoreapi.com/products/{id}", id)) {
+            return true;
+        }
+        return false;
+    }
 }

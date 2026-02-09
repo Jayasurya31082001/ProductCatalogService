@@ -1,6 +1,7 @@
 package dev.jayasurya.productcatalogservice.Controller;
 
 import dev.jayasurya.productcatalogservice.DTO.ProductDTO;
+import dev.jayasurya.productcatalogservice.Exception.ProductAlreadyExistException;
 import dev.jayasurya.productcatalogservice.Exception.ProductNotFoundException;
 import dev.jayasurya.productcatalogservice.Model.Product;
 import dev.jayasurya.productcatalogservice.Service.IProductService;
@@ -59,7 +60,7 @@ public class ProductController {
 }
      */
     @PostMapping("/api/v1/products")
-    public  ResponseEntity<ProductDTO> createProduct(@RequestBody ProductDTO productDTO) {
+    public  ResponseEntity<ProductDTO> createProduct(@RequestBody ProductDTO productDTO) throws ProductAlreadyExistException {
        if(productDTO == null) {
            throw new IllegalArgumentException("Product data cannot be null" );
        }
@@ -95,5 +96,16 @@ public class ProductController {
         return new ResponseEntity<>(updatedProduct.toProductDTO(), HttpStatus.OK);
     }
 
+    @DeleteMapping("/api/v1/products/{id}")
+    public ResponseEntity<String> deleteProductById(@PathVariable Long id) throws ProductNotFoundException {
+        if (id == null || id <= 0) {
+            throw new IllegalArgumentException("Invalid product ID " + id);
+        }
+        boolean isDeleted = productService.deleteProductById(id);
+        if (!isDeleted) {
+            throw new ProductNotFoundException("Product not found with ID: " + id);
+        }
+        return new ResponseEntity<>("Product '"+id+"' deleted sucessfully",HttpStatus.OK);
+    }
 
 }
